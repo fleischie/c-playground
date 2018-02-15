@@ -9,6 +9,8 @@ This project uses the `ncurses` library to implement terminal applications.
 
 ## Applications
 
+- [`hello-world`](src/hello-world/) - First attempt at using this library.
+
 ## License
 
 See this monorepo's [`LICENSE`](../LICENSE).
