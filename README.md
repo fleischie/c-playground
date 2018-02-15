@@ -9,6 +9,7 @@ My personal C/C++ project playground monorepo.
 
 ## Projects
 
+- [`loadavg`](loadavg/) - Print color coded list of CPU load values.
 - [`ncurses`](ncurses/) - `ncurses` based terminal applications.
 
 ## License
