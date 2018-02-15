@@ -9,6 +9,8 @@ My personal C/C++ project playground monorepo.
 
 ## Projects
 
+- [`ncurses`](ncurses/) - `ncurses` based terminal applications.
+
 ## License
 
 Distributed under the Apache-2.0 license. See [`LICENSE`](LICENSE) for more

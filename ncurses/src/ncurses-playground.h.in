@@ -1,0 +1,2 @@
+#cmakedefine NCURSES_PLAYGROUND_VERSION_MAJOR @ncurses-playground_VERSION_MAJOR@
+#cmakedefine NCURSES_PLAYGROUND_VERSION_MINOR @ncurses-playground_VERSION_MINOR@
