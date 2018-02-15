@@ -11,6 +11,8 @@ My personal C/C++ project playground monorepo.
 
 - [`loadavg`](loadavg/) - Print color coded list of CPU load values.
 - [`ncurses`](ncurses/) - `ncurses` based terminal applications.
+- [`xcb-xkb-layout`](xcb-xkb-layout/) - `xcb` based program to print out the
+                                        currently used keyboard layout.
 
 ## License
 
