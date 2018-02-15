@@ -6,3 +6,4 @@ include_directories (${CMAKE_BINARY_DIR})
 
 add_subdirectory (hello-world)
 add_subdirectory (print-bold)
+add_subdirectory (cascade)
