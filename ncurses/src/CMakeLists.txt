@@ -5,3 +5,4 @@ configure_file (
 include_directories (${CMAKE_BINARY_DIR})
 
 add_subdirectory (hello-world)
+add_subdirectory (print-bold)
