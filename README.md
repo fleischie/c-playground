@@ -13,6 +13,8 @@ My personal C/C++ project playground monorepo.
 - [`ncurses`](ncurses/) - `ncurses` based terminal applications.
 - [`xcb-xkb-layout`](xcb-xkb-layout/) - `xcb` based program to print out the
                                         currently used keyboard layout.
+- [`x11-xkb-layout`](x11-xkb-layout/) - `Xlib` based program to print out the
+                                        currently used keyboard layout.
 
 ## License
 
