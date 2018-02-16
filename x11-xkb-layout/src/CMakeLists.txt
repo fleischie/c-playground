@@ -1,7 +1,7 @@
 add_executable (x11-xkb-layout "")
 target_link_libraries (
   x11-xkb-layout
-    x11
+    X11
     xkbfile
 )
 

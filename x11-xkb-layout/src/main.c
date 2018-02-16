@@ -45,6 +45,7 @@ display_xkb_display_error (int reason, int major, int minor, const char *name)
 					"(%s) does not support the XKB"
 					"extension.\n",
 					name);
+			break;
 		// unknown error
 		default:
 			fprintf(
@@ -96,13 +97,17 @@ get_current_keyboard_layout (char **layout)
 				minor,
 				display_name);
 
-		return EXIT_FAILURE;
+		return RETURN_ERROR;
 	}
 
-	// store retrieved layout in variable
-	*layout = defs.layout;
+	// retrieve keyboard layout from server and store in variable
+	if (XkbRF_GetNamesProp(dpy, NULL, &defs))
+	{
+		*layout = defs.layout;
+		return RETURN_OK;
+	}
 
-	return RETURN_OK;
+	return RETURN_ERROR;
 }
 
 /**
