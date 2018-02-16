@@ -18,4 +18,4 @@ This project uses the `ncurses` library to implement terminal applications.
 
 ## License
 
-See this monorepo's [`LICENSE`](../LICENSE).
+See this monorepo's [LICENSE](../LICENSE).

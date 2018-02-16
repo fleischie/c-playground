@@ -18,5 +18,5 @@ My personal C/C++ project playground monorepo.
 
 ## License
 
-Distributed under the Apache-2.0 license. See [`LICENSE`](LICENSE) for more
+Distributed under the Apache-2.0 license. See [LICENSE](LICENSE) for more
 information.

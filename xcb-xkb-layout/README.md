@@ -9,6 +9,6 @@ wanted ISO 639 codes and could only achieve this via Xlib's keyboard extension.
 
 ## License
 
-See this monorepo's [`LICENSE`](../LICENSE).
+See this monorepo's [LICENSE](../LICENSE).
 
 [polybar]: https://github.com/jaagr/polybar

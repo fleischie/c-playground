@@ -7,6 +7,6 @@ the color codes for this program.
 
 ## License
 
-See this monorepo's [`LICENSE`](../LICENSE).
+See this monorepo's [LICENSE](../LICENSE).
 
 [polybar]: https://github.com/jaagr/polybar
