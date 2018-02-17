@@ -13,7 +13,6 @@ main ()
 	int width;
 	int height;
 	int width_margin;
-	int height_margin;
 	int w;
 
 	initscr();
@@ -23,7 +22,6 @@ main ()
 
 	// determine size of window
 	width_margin = strlen(msg) + 5;
-	height_margin = 1;
 	getmaxyx(stdscr, height, width);
 
 	// create timespec struct for delaying next iteration
