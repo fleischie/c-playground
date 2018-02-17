@@ -4,23 +4,16 @@
 
 #include <sys/sysinfo.h>
 
-// define status enum
-enum {
-	STATUS_OK = 0,
-	STATUS_WARNING,
-	STATUS_ALERT
-};
-
 // define constant values to use inside of this script
-const int LOAD_ELEMENTS = 3;
-const int LOAD_WIDTH = 25;
-const float THRESHOLD_WARNING = 0.7f;
-const float THRESHOLD_ALERT = 1.0f;
-const char *LOAD_STATUS[] = {
-	"%.2f",
-	"%{F#e6ff00}%.2f%{F-}",
-	"%{F#bd2c40}%.2f%{F-}"
-};
+#define LOAD_ELEMENTS  3
+#define LOAD_WIDTH    25
+#define THRESHOLD_WARNING 0.7f
+#define THRESHOLD_ALERT   1.0f
+
+// define load status formats
+#define FORMAT_STATUS_OK      "%.2f"
+#define FORMAT_STATUS_WARNING "%%{F#e6ff00}%.2f%%{F-}"
+#define FORMAT_STATUS_ALERT   "%%{F#bd2c40}%.2f%%{F-}"
 
 /**
  * @brief Add color tags to the load value.
@@ -43,15 +36,15 @@ colorLoad (double load, char **out)
 	// check and format given load by status template
 	if (load >= (THRESHOLD_ALERT * procCount))
 	{
-		snprintf(*out, LOAD_WIDTH, LOAD_STATUS[STATUS_ALERT], load);
+		snprintf(*out, LOAD_WIDTH, FORMAT_STATUS_ALERT, load);
 	}
 	else if (load >= (THRESHOLD_WARNING * procCount))
 	{
-		snprintf(*out, LOAD_WIDTH, LOAD_STATUS[STATUS_WARNING], load);
+		snprintf(*out, LOAD_WIDTH, FORMAT_STATUS_WARNING, load);
 	}
 	else
 	{
-		snprintf(*out, LOAD_WIDTH, LOAD_STATUS[STATUS_OK], load);
+		snprintf(*out, LOAD_WIDTH, FORMAT_STATUS_OK, load);
 	}
 }
 
@@ -81,11 +74,11 @@ main ()
 	}
 
 	// initialize load strings
-	loadStr = (char **) malloc(LOAD_ELEMENTS * sizeof (char *));
+	loadStr = (char **) calloc(LOAD_ELEMENTS, sizeof (char *));
 	for (loadElem = 0; loadElem < LOAD_ELEMENTS; loadElem++)
 	{
 		loadStr[loadElem] =
-			(char *) malloc(LOAD_WIDTH * sizeof (char));
+			(char *) calloc(LOAD_WIDTH, sizeof (char));
 	}
 
 	// format available load elements
@@ -93,7 +86,7 @@ main ()
 	// - format the load element with the appropriate color tags
 	// - copy formatted load text into non-temporary store
 	// - free the allocated memory
-	char *formattedText = (char *) malloc(LOAD_WIDTH * sizeof (char));
+	char *formattedText = (char *) calloc(LOAD_WIDTH, sizeof (char));
 	for (loadElem = 0; loadElem < result; loadElem++)
 	{
 		colorLoad(load[loadElem], &formattedText);
