@@ -8,11 +8,17 @@
 
 static Display *dpy;
 
-enum return_codes {
-	RETURN_OK = 0,
-	RETURN_ERROR
-};
-
+/**
+ * @brief Display xkb display errors.
+ *
+ * Use the given parameters to determine cause of error and print an
+ * appropriate message.
+ *
+ * @param [in] reason Integer value representing the error cause.
+ * @param [in] major  Integer major version value of server.
+ * @param [in] minor  Integer minor version value of server.
+ * @param [in] name   String representing the display name.
+ */
 void
 display_xkb_display_error (int reason, int major, int minor, const char *name)
 {
@@ -56,7 +62,17 @@ display_xkb_display_error (int reason, int major, int minor, const char *name)
 	}
 }
 
-int
+/**
+ * @brief Retrieve the current keyboard layout.
+ *
+ * Retrieve the currently used keyboard layout from the displays
+ * definitions. Store the layout in the given char pointer reference.
+ * This function does not alter the reference, if an error was
+ * encountered.
+ *
+ * @param [out] layout Char pointer reference to write the layout into.
+ */
+void
 get_current_keyboard_layout (char **layout)
 {
 	int major;
@@ -96,18 +112,13 @@ get_current_keyboard_layout (char **layout)
 				major,
 				minor,
 				display_name);
-
-		return RETURN_ERROR;
 	}
 
 	// retrieve keyboard layout from server and store in variable
 	if (XkbRF_GetNamesProp(dpy, NULL, &defs))
 	{
 		*layout = defs.layout;
-		return RETURN_OK;
 	}
-
-	return RETURN_ERROR;
 }
 
 /**
@@ -123,12 +134,18 @@ main ()
 {
 	char *layout;
 
-	if (get_current_keyboard_layout(&layout) != RETURN_OK)
+	// retrieve the layout if possible
+	layout = NULL;
+	get_current_keyboard_layout(&layout);
+
+	// if the layout couldn't be determined the program failed
+	if (!layout)
 	{
-		layout = "";
+		return EXIT_FAILURE;
 	}
 
+	// display the successfully retrieved layout and exit
+	// successfully
 	puts(layout);
-
 	return EXIT_SUCCESS;
 }
