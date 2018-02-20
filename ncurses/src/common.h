@@ -1,0 +1,2 @@
+#define CURSOR_INVISIBLE 0
+#define CURSOR_VISIBLE   1

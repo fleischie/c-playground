@@ -15,6 +15,7 @@ This project uses the `ncurses` library to implement terminal applications.
 - [`password-prompt`](src/password-prompt/) - Visually communicate hidden
                                               character input .
 - [`attrib-demo`](src/attrib-demo/) - Demo terminal font attributes.
+- [`windowing`](src/windowing/) - Control a window layout using another window.
 
 ## License
 
