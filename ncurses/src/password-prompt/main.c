@@ -3,9 +3,7 @@
 #include <string.h>
 
 #include <ncurses-playground.h>
-
-#define CURSOR_INVISIBLE 0
-#define CURSOR_VISIBLE 1
+#include "../common.h"
 
 #define PASSWORD_LENGTH 128
 
@@ -36,7 +34,6 @@ main ()
 {
 	bool is_input;
 	bool is_end;
-	int width;
 	int height;
 	int ch;
 	int length;
@@ -106,7 +103,7 @@ main ()
 	curs_set(CURSOR_VISIBLE);
 
 	// get dimension of current window
-	getmaxyx(stdscr, height, width);
+	height = getmaxy(stdscr);
 	mvprintw(height - 1, 0, "Your password is: %s\n", input);
 
 	getch();

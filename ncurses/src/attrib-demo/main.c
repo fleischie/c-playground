@@ -3,9 +3,7 @@
 #include <string.h>
 
 #include <ncurses-playground.h>
-
-#define CURSOR_INVISIBLE 0
-#define CURSOR_VISIBLE 1
+#include "../common.h"
 
 #define MENU_WIDTH 256
 
@@ -197,13 +195,13 @@ main ()
 	ch = '\0';
 	do
 	{
-		is_end = handle_input (&ch, &main_attrs);
+		is_end = handle_input(&ch, &main_attrs);
 
 		bitmask = generate_bitmask(&main_attrs);
 		attron(bitmask);
 		mvprintw(
 				height / 2,
-				(width / 2) - (strlen(demo_text) / 2),
+				(width - strlen(demo_text)) / 2,
 				demo_text
 			);
 
