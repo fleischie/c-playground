@@ -25,6 +25,23 @@ typedef struct window_t {
 } CustomWindow;
 
 /**
+ * @brief Clear the given window.
+ *
+ * @param [in] win    Window to clear.
+ * @param [in] height Height of window.
+ * @param [in] width  Width of window.
+ */
+void
+clear_background (WINDOW *win, int height, int width)
+{
+	for (int h = 0; h < height; h++)
+	{
+		mvwprintw(win, h, 0, "%*s", width, "");
+	}
+	wrefresh(win);
+}
+
+/**
  * @brief Display the state of the main window in the control window.
  *
  * @param [in] win           Ncurses window to display state into.
@@ -76,7 +93,6 @@ render_main_window (CustomWindow *win)
 {
 	// clear and remove currently displayed window
 	wborder(win->win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
-	wrefresh(win->win);
 	delwin(win->win);
 
 	// create new window instance with the updated state
@@ -161,6 +177,7 @@ main ()
 	int height;
 	int width;
 
+	WINDOW *background;
 	WINDOW *control_win;
 	CustomWindow *main_window;
 
@@ -171,6 +188,11 @@ main ()
 	noecho();
 	curs_set(CURSOR_INVISIBLE);
 
+	// initialize color mode
+	start_color();
+	init_color(COLOR_GREEN, 50, 250, 50);
+	init_pair(1, COLOR_WHITE, COLOR_GREEN);
+
 	// create a new control window
 	getmaxyx(stdscr, height, width);
 	control_win = newwin(
@@ -178,6 +200,11 @@ main ()
 			CONTROL_WINDOW_WIDTH,
 			0,
 			0);
+
+	// define background to be the container for the main window
+	// also enable the first color pair for it
+	background = newwin(height, width/2, 0, width/2);
+	wattron(background, COLOR_PAIR(1));
 
 	// create and initialize main window state
 	main_window = malloc (sizeof (CustomWindow));
@@ -197,6 +224,9 @@ main ()
 	{
 		refresh();
 		getmaxyx(stdscr, height, width);
+
+		// clear the render area (container + main_window)
+		clear_background(background, height, width / 2);
 
 		// render main and control windows
 		// in that order to bypass artefacts on the control window
