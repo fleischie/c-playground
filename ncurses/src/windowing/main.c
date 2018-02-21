@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <ncurses.h>
+#include <time.h>
 
 #include <ncurses-playground.h>
 #include "../common.h"
@@ -8,6 +9,7 @@
 #define CONTROL_WINDOW_WIDTH  40
 #define MAIN_WINDOW_MIN_HEIGHT 2
 #define MAIN_WINDOW_MIN_WIDTH  2
+#define FPS_SMOOTHING 0.9
 
 /**
  * @struct CustomWindow
@@ -23,6 +25,22 @@ typedef struct window_t {
 	int x;
 	int y;
 } CustomWindow;
+
+/**
+ * @brief Calculate the smooth average FPS.
+ *
+ * @param [in]  start Time measured before rendering.
+ * @param [in]  end   Time measured after rendering.
+ * @param [out] fps   Variable to write new fps value to.
+ */
+void
+calculate_fps (clock_t start, clock_t end, double *fps)
+{
+	double current;
+
+	current = (double) (end - start) / CLOCKS_PER_SEC;
+	*fps = (*fps * FPS_SMOOTHING) + (current * (1 - FPS_SMOOTHING));
+}
 
 /**
  * @brief Clear the given window.
@@ -46,11 +64,13 @@ clear_background (WINDOW *win, int height, int width)
  *
  * @param [in] win           Ncurses window to display state into.
  * @param [in] custom_window CustomWindow state to display.
+ * @param [in] fps           FPS to display in corner.
  */
 void
-render_control_window (WINDOW *win, CustomWindow *custom_window)
+render_control_window (WINDOW *win, CustomWindow *custom_window, double *fps)
 {
 	box(win, 0, 0);
+
 	mvwprintw(
 			win,
 			2,
@@ -61,6 +81,7 @@ render_control_window (WINDOW *win, CustomWindow *custom_window)
 			4,
 			3,
 			"Arrow keys to move, WASD to resize.");
+
 	mvwprintw(
 			win,
 			6,
@@ -75,11 +96,26 @@ render_control_window (WINDOW *win, CustomWindow *custom_window)
 			"- Dimension (%4i, %4i)",
 			custom_window->width - MAIN_WINDOW_MIN_WIDTH,
 			custom_window->height - MAIN_WINDOW_MIN_HEIGHT);
+
 	mvwprintw(
 			win,
 			9,
 			3,
 			"[Q]uit");
+
+	// display fps in top-right corner
+	// NOTES:
+	// - `CONTROL_WINDOW_WIDTH` to start from right border
+	// - `-12` = 10 (format string width), 2 (padding)
+	// - "%6.1f" formats the fps snugly w/ a resolution of 4 digits
+	//   and 1 decimal point
+	// - `1 / *fps` to display actual fps and not time per frame
+	mvwprintw(
+			win,
+			1,
+			CONTROL_WINDOW_WIDTH - 12,
+			"FPS %6.1f",
+			1 / *fps);
 	wrefresh(win);
 }
 
@@ -176,6 +212,9 @@ main ()
 	char ch;
 	int height;
 	int width;
+	double *fps;
+	clock_t start;
+	clock_t end;
 
 	WINDOW *background;
 	WINDOW *control_win;
@@ -213,15 +252,21 @@ main ()
 	main_window->x = width / 2 + 1;
 	main_window->y = 2;
 	main_window->win = newwin(
-			main_window->y,
-			main_window->x,
 			main_window->height,
-			main_window->width);
+			main_window->width,
+			main_window->y,
+			main_window->x);
+
+	fps = malloc(sizeof (double));
 
 	// start main loop
 	is_end = false;
+	*fps = 1.0;
 	while (!is_end)
 	{
+		// measure time before render
+		start = clock();
+
 		refresh();
 		getmaxyx(stdscr, height, width);
 
@@ -231,17 +276,23 @@ main ()
 		// render main and control windows
 		// in that order to bypass artefacts on the control window
 		render_main_window(main_window);
-		render_control_window(control_win, main_window);
+		render_control_window(control_win, main_window, fps);
+
+		// measure time after render and calculate fps
+		end = clock();
+		calculate_fps(start, end, fps);
 
 		// handle a newly input character
 		ch = getch();
 		is_end = handle_input(ch, main_window, height, width);
 	}
 
-	// de-initialize ncurses and main window
-	curs_set(CURSOR_VISIBLE);
-	refresh();
+	// free resources
 	free(main_window);
+	free(fps);
+
+	// de-initialize ncurses
+	curs_set(CURSOR_VISIBLE);
 	endwin();
 
 	// exit successfully
