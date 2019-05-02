@@ -15,6 +15,8 @@ My personal C/C++ project playground monorepo.
                                         currently used keyboard layout.
 - [`x11-xkb-layout`](x11-xkb-layout/) - `Xlib` based program to print out the
                                         currently used keyboard layout.
+- [`gen-passwd`](gen-passwd/) - `libsodium` based generator for rememberable
+                                passwords.
 
 ## License
 
