@@ -17,6 +17,8 @@ My personal C/C++ project playground monorepo.
                                         currently used keyboard layout.
 - [`gen-passwd`](gen-passwd/) - `libsodium` based generator for rememberable
                                 passwords.
+- [`monitor-temp`](monitor-temp/) - `libsensors` + `libnotify` based monitor
+                                    for the computer's temperature.
 
 ## License
 
