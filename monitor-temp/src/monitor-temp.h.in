@@ -1,0 +1,5 @@
+#define MONITOR_TEMP_VERSION_MAJOR @monitor-temp_VERSION_MAJOR@
+#define MONITOR_TEMP_VERSION_MINOR @monitor-temp_VERSION_MINOR@
+
+#define APP_NAME "Temperature Monitor"
+#define DEFAULT_TIMEOUT 15

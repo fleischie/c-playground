@@ -1,3 +1,9 @@
+configure_file (
+  ${CMAKE_CURRENT_LIST_DIR}/monitor-temp.h.in
+  ${CMAKE_BINARY_DIR}/monitor-temp.h)
+
+include_directories (${CMAKE_BINARY_DIR})
+
 add_executable (monitor-temp "")
 target_link_libraries (
   monitor-temp
@@ -8,6 +14,7 @@ target_link_libraries (
 target_sources (
   monitor-temp PRIVATE
     main.c
+    helpers.c
 )
 
 target_include_directories (
