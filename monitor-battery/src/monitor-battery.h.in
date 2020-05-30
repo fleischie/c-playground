@@ -1,0 +1,4 @@
+#define MONITOR_BATTERY_VERSION_MAJOR @monitor-battery_VERSION_MAJOR@
+#define MONITOR_BATTERY_VERSION_MINOR @monitor-battery_VERSION_MINOR@
+
+#define APP_NAME "Battery Status/Charge Monitor"

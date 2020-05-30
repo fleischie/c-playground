@@ -19,6 +19,8 @@ My personal C/C++ project playground monorepo.
                                 passwords.
 - [`monitor-temp`](monitor-temp/) - `libsensors` + `libnotify` based monitor
                                     for the computer's temperature.
+- [`monitor-battery`](monitor-battery/) - Notify or suspend the system if the
+                                          battery charge is too low.
 
 ## License
 
