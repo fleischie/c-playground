@@ -10,8 +10,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "ipc.h"
+
+#define TIMEOUT_DEFAULT_SEC 5
 
 /**
  * translate_xkb_layout_to_iso_code - Simple translation function to
@@ -19,7 +22,8 @@
  *                                    specifier to a digestable format
  */
 static const char *
-translate_xkb_layout_to_iso_code(const char* input) {
+translate_xkb_layout_to_iso_code(const char *input)
+{
   if (0 == strncasecmp(input, "english", 7)) {
     return "en";
   } else if (0 == strncasecmp(input, "russian", 7)) {
@@ -29,50 +33,9 @@ translate_xkb_layout_to_iso_code(const char* input) {
   return "";
 }
 
-int
-main(int argc, char **argv)
+static int
+output_keyboard_layout(int socketfd, uint64_t vendor_id, uint64_t product_id)
 {
-  /* get/default vendor/product id
-   * check each argument, whether it is a specific version and whether
-   * there is an option for it, default each arg to 1 on error */
-  uint64_t vendor_id = 1;
-  uint64_t product_id = 1;
-  char *endptr;
-  for (int i = 0; i < argc; i++) {
-    if (0 == strcmp(argv[i], "--vendor") || 0 == (strcmp(argv[i], "-V"))) {
-      if (i + 1 >= argc) {
-        break;
-      }
-
-      endptr = "";
-      errno = 0;
-      vendor_id = (uint64_t) strtol(argv[i + 1], &endptr, 10);
-      if ((errno == ERANGE) || (0 != errno && 0 != vendor_id) ||
-          argv[i + 1] == endptr) {
-        vendor_id = 1;
-      }
-    } else if (0 == strcmp(argv[i], "--product") ||
-               0 == (strcmp(argv[i], "-P"))) {
-      if (i + 1 >= argc) {
-        break;
-      }
-
-      endptr = "";
-      errno = 0;
-      product_id = (uint64_t) strtol(argv[i + 1], &endptr, 10);
-      if ((errno == ERANGE) || (0 != errno && 0 != product_id) ||
-          argv[i + 1] == endptr) {
-        product_id = 1;
-      }
-    }
-  }
-
-  const char *sway_socket_path = getenv("SWAYSOCK");
-  if (!sway_socket_path) {
-    fprintf(stderr, "%s\n", "Unable to retrieve sway socket");
-    return 1;
-  }
-  int socketfd = ipc_open_socket(sway_socket_path);
   uint32_t len = 0;
   char *res = ipc_dispatch_command(socketfd, IPC_GET_INPUTS, &len);
 
@@ -116,6 +79,87 @@ main(int argc, char **argv)
   }
 
   free(res);
+
+  return result;
+}
+
+int
+main(int argc, char **argv)
+{
+  /* parse arguments
+   *
+   * get/default vendor/product id
+   * check each argument, whether it is a specific version and whether
+   * there is an option for it, default each arg to 1 on error
+   *
+   * the continuous flag defaults to TIMEOUT_DEFAULT_SEC seconds if it
+   * is not specifically set
+   */
+  uint64_t vendor_id = 1;
+  uint64_t product_id = 1;
+  bool is_continuous = false;
+  struct timespec timeout = { .tv_sec = 0, .tv_nsec = 0 };
+  char *endptr;
+  for (int i = 0; i < argc; i++) {
+    if (0 == strcmp(argv[i], "--vendor") || 0 == strcmp(argv[i], "-V")) {
+      if (i + 1 >= argc) {
+        break;
+      }
+
+      endptr = "";
+      errno = 0;
+      vendor_id = (uint64_t) strtol(argv[i + 1], &endptr, 10);
+      if ((errno == ERANGE) || (0 != errno && 0 != vendor_id) ||
+          argv[i + 1] == endptr) {
+        vendor_id = 1;
+      }
+    } else if (0 == strcmp(argv[i], "--product") ||
+               0 == strcmp(argv[i], "-P")) {
+      if (i + 1 >= argc) {
+        break;
+      }
+
+      endptr = "";
+      errno = 0;
+      product_id = (uint64_t) strtol(argv[i + 1], &endptr, 10);
+      if ((errno == ERANGE) || (0 != errno && 0 != product_id) ||
+          argv[i + 1] == endptr) {
+        product_id = 1;
+      }
+    } else if (0 == strcmp(argv[i], "--continuous") ||
+               0 == strcmp(argv[i], "-C")) {
+      /* enable continuous mode */
+      is_continuous = true;
+
+      if (i + 1 >= argc) {
+        break;
+      }
+
+      endptr = "";
+      errno = 0;
+      int64_t timeout_sec = (uint64_t) strtol(argv[i + 1], &endptr, 10);
+      if ((errno == ERANGE) || 0 != errno || 1 > timeout_sec ||
+          argv[i + 1] == endptr) {
+        timeout.tv_sec = TIMEOUT_DEFAULT_SEC;
+      } else {
+        timeout.tv_sec = timeout_sec;
+      }
+    }
+  }
+
+  const char *sway_socket_path = getenv("SWAYSOCK");
+  if (!sway_socket_path) {
+    fprintf(stderr, "%s\n", "Unable to retrieve sway socket");
+    return 1;
+  }
+  int socketfd = ipc_open_socket(sway_socket_path);
+
+  /* display layout continuously if requested, but at least once */
+  int result;
+  do {
+    result = output_keyboard_layout(socketfd, vendor_id, product_id);
+    clock_nanosleep(CLOCK_MONOTONIC, 0, &timeout, NULL);
+  } while (is_continuous);
 
   return result;
 }
