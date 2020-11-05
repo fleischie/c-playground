@@ -17,6 +17,9 @@ My personal C/C++ project playground monorepo.
                                         currently used keyboard layout.
 - [`gen-passwd`](gen-passwd/) - `libsodium` based generator for rememberable
                                 passwords.
+- [`sway-keyboard-layout`](sway-keyboard-layout/) - `sway` IPC based program to
+                                                    print out the currently
+                                                    used keyboard layout.
 - [`monitor-temp`](monitor-temp/) - `libsensors` + `libnotify` based monitor
                                     for the computer's temperature.
 - [`monitor-battery`](monitor-battery/) - Notify or suspend the system if the
